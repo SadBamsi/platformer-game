@@ -1,0 +1,107 @@
+# syntax=docker/dockerfile:1
+#
+# infra/Dockerfile.api — multi-stage образ @agentic-game/api (Fastify, ESM).
+#
+# ВАЖНО: контекст сборки — КОРЕНЬ РЕПОЗИТОРИЯ, не infra/ и не apps/api/:
+#   docker build -f infra/Dockerfile.api .
+# (см. infra/docker-compose.yml: build.context: ..). Без этого pnpm не
+# увидит pnpm-lock.yaml/pnpm-workspace.yaml и не сможет разрешить
+# workspace-зависимость @agentic-game/types.
+#
+# Владение (см. CLAUDE.md): apps/api/src — backend-architect/database-
+# engineer. Этот Dockerfile лишь собирает и упаковывает их код, ничего в
+# apps/api/src не меняет и не чинит.
+
+ARG NODE_IMAGE=node:24.12.0-alpine@sha256:c921b97d4b74f51744057454b306b418cf693865e73b8100559189605f6955b8
+# Node 24.12.0 — та же мажорная И патч-версия, что установлена локально
+# (проверено `node -v` 2026-09-22) и ожидается в CI. Тег заматчен на
+# multi-arch manifest-list digest (amd64+arm64+ppc64le+s390x), резолвлен
+# через Docker Hub API 2026-09-22 — при апгрейде Node пере-резолвьте digest
+# и обновите эту дату.
+
+# ---------------------------------------------------------------------------
+# base — общий слой: включаем corepack и активируем pnpm нужной версии.
+# Версия pnpm ЖЁСТКО совпадает с "packageManager" из корневого package.json
+# (11.6.0) — синхронизируйте оба места при апгрейде pnpm, иначе поведение
+# install/deploy может незаметно разойтись между хостом и образом.
+# ---------------------------------------------------------------------------
+FROM ${NODE_IMAGE} AS base
+RUN corepack enable && corepack prepare pnpm@11.6.0 --activate
+WORKDIR /app
+
+# ---------------------------------------------------------------------------
+# deps — устанавливаем зависимости ВСЕГО workspace с --frozen-lockfile.
+# Копируем только манифесты и лок-файл (не исходники), чтобы слой
+# кешировался, пока зависимости не меняются: правки в apps/api/src не
+# должны инвалидировать переустановку node_modules.
+#
+# Ставим deps всех трёх пакетов (api/game/types), а не только api: pnpm
+# резолвит workspace:* через единый pnpm-lock.yaml на весь монорепозиторий,
+# частичная установка по одному воркспейсу без остальных манифестов ведёт
+# к ERR_PNPM_OUTDATED_LOCKFILE.
+# ---------------------------------------------------------------------------
+FROM base AS deps
+COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc package.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY apps/game/package.json apps/game/package.json
+COPY packages/types/package.json packages/types/package.json
+RUN --mount=type=cache,id=pnpm-store-api,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# ---------------------------------------------------------------------------
+# build — копируем исходники и собираем api (tsc -> dist).
+# ---------------------------------------------------------------------------
+FROM deps AS build
+COPY tsconfig.base.json ./
+COPY packages/types packages/types
+COPY apps/api apps/api
+# --filter @agentic-game/api... = сам пакет + его workspace-зависимости
+# (@agentic-game/types). Для types build — no-op (source-only пакет, см.
+# packages/types/package.json), реальную работу делает только tsc в api.
+RUN pnpm --filter @agentic-game/api... build
+
+# pnpm deploy копирует workspace-зависимости КАК РЕАЛЬНЫЕ ФАЙЛЫ внутрь
+# node_modules вместо symlink на ../../packages/types. Это принципиально:
+# apps/api/src импортирует из '@agentic-game/types' не только типы, но и
+# рантайм-значения (например LEADERBOARD_DEFAULT_LIMIT в
+# leaderboard.controller.ts), а package.json пакета types указывает
+# "main"/"exports" прямо на ./src/index.ts — source-only пакет без build.
+# Если в рантайм-образ попадёт голый node_modules с symlink'ом, цель
+# ../../packages/types там физически не будет существовать (мы её не
+# копируем в runtime-стадию) — импорт упадёт при старте. pnpm deploy решает
+# это копированием (подтверждено через Context7, pnpm.io/docker.md, раздел
+# "Monorepo multi-app Dockerfile with pnpm deploy --filter --prod").
+# --prod дополнительно исключает devDependencies (typescript, tsx, vitest,
+# @types/*) из итогового рантайм-образа.
+#
+# --legacy обязателен на pnpm 11: начиная с pnpm v10 `pnpm deploy` по
+# умолчанию работает только для workspace с настройкой
+# "inject-workspace-packages=true" в pnpm-workspace.yaml (иначе падает с
+# ERR_PNPM_DEPLOY_NONINJECTED_WORKSPACE — проверено эмпирически при сборке
+# этого образа). Эта настройка не задана в pnpm-workspace.yaml (не моя
+# зона владения — правит devops-engineer, но правка требует согласования с
+# владельцем файла), поэтому используем официально документированный обход
+# — флаг --legacy, который возвращает поведение "деплоя копированием" без
+# требования inject-workspace-packages (подтверждено через Context7,
+# pnpm.io/cli/deploy.md, раздел "--legacy").
+RUN pnpm --filter @agentic-game/api deploy --prod --legacy /prod/api
+
+# ---------------------------------------------------------------------------
+# runtime — минимальный образ: нет pnpm/corepack/toolchain, не от root.
+# ---------------------------------------------------------------------------
+FROM ${NODE_IMAGE} AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=build --chown=node:node /prod/api ./
+# node:*-alpine уже содержит непривилегированного пользователя "node"
+# (uid 1000) — отдельно создавать не нужно.
+USER node
+EXPOSE 4000
+# Дублирует healthcheck из docker-compose.yml (там он тоже явно задан по
+# требованиям задачи) — на случай запуска образа вне compose. Бьёт в
+# реальный /health, который сам проверяет БД (см. apps/api/src/routes/
+# health.route.ts) и осознанно отвечает 503 при недоступности БД — CMD ниже
+# должен считать 503 провалом healthcheck, а не только сетевые ошибки.
+HEALTHCHECK --interval=10s --timeout=3s --start-period=15s --retries=5 \
+  CMD ["node", "-e", "fetch(`http://127.0.0.1:${process.env.PORT||4000}/health`).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+CMD ["node", "dist/index.js"]

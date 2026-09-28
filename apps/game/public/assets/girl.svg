@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 6 20 42" width="256" height="537.6" shape-rendering="crispEdges">
+  <!-- Каса (ззаду) -->
+  <path d="M7,22 h3 v3 h-3 z M6,25 h3 v3 h-3 z M5,28 h3 v3 h-3 z" fill="#8B5A2B"/>
+  <path d="M5,31 h2 v2 h-2 z" fill="#2B5B84"/> <!-- Стужка -->
+
+  <!-- Валоссе (аснова і затылак) -->
+  <path d="M10,8 h12 v12 h-12 z" fill="#A06832"/>
+  <path d="M11,6 h10 v2 h-10 z" fill="#A06832"/>
+
+  <!-- Твар і шыя -->
+  <path d="M12,12 h9 v8 h-9 z M14,20 h4 v2 h-4 z" fill="#FFCC99"/>
+  <!-- Шчочкі -->
+  <path d="M12,17 h2 v1 h-2 z M19,17 h2 v1 h-2 z" fill="#FF9999"/>
+  <!-- Вочы -->
+  <path d="M14,14 h2 v3 h-2 z M19,14 h2 v3 h-2 z" fill="#222222"/>
+  <path d="M14,14 h1 v1 h-1 z M19,14 h1 v1 h-1 z" fill="#FFFFFF"/>
+  <!-- Рот -->
+  <path d="M16,18 h2 v1 h-2 z" fill="#CC5555"/>
+
+  <!-- Чолка / Блікі на валоссі -->
+  <path d="M10,8 h12 v3 h-12 z" fill="#B87D43"/>
+  <path d="M10,8 h2 v5 h-2 z M20,8 h2 v5 h-2 z" fill="#8B5A2B"/>
+  <path d="M13,9 h2 v1 h-2 z M17,9 h2 v1 h-2 z" fill="#D49B5E"/>
+
+  <!-- Рукавы вышыванкі (белыя) -->
+  <path d="M8,22 h4 v7 h-4 z M20,22 h4 v7 h-4 z" fill="#FFFFFF"/>
+  <!-- Беларускі арнамент на рукавах (чырвоны) -->
+  <path d="M9,24 h2 v1 h-2 z M9,26 h2 v1 h-2 z M21,24 h2 v1 h-2 z M21,26 h2 v1 h-2 z" fill="#D32F2F"/>
+
+  <!-- Сукенка / Салафан (блакітна-сіні) -->
+  <path d="M12,22 h8 v6 h-8 z" fill="#1E88E5"/>
+  <path d="M10,28 h12 v10 h-12 z" fill="#1565C0"/>
+  <!-- Цені і змалочкі на сукенцы -->
+  <path d="M10,37 h12 v1 h-12 z" fill="#0D47A1"/>
+  <path d="M12,28 h1 v9 h-1 z M16,28 h1 v9 h-1 z M20,28 h1 v9 h-1 z" fill="#1976D2"/>
+
+  <!-- Кісці рук -->
+  <path d="M8,29 h3 v2 h-3 z M21,29 h3 v2 h-3 z" fill="#FFCC99"/>
+
+  <!-- Ногі -->
+  <path d="M12,38 h3 v3 h-3 z M17,38 h3 v3 h-3 z" fill="#FFCC99"/>
+
+  <!-- Чаравікі (карычневыя) -->
+  <path d="M11,41 h4 v6 h-4 z M17,41 h4 v6 h-4 z" fill="#5D4037"/>
+  <path d="M10,45 h5 v2 h-5 z M17,45 h5 v2 h-5 z" fill="#3E2723"/> <!-- Нос чаравіка -->
+  <!-- Шнуроўкі -->
+  <path d="M12,42 h2 v1 h-2 z M12,44 h2 v1 h-2 z M18,42 h2 v1 h-2 z M18,44 h2 v1 h-2 z" fill="#8D6E63"/>
+</svg>

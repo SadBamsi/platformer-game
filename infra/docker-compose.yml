@@ -1,0 +1,176 @@
+# infra/docker-compose.yml
+#
+# Владение (см. CLAUDE.md): database-engineer владеет ТОЛЬКО сервисом `db`
+# и его volume в этом файле. Сервисы `api` и `game` добавит
+# devops-engineer — не создавайте их здесь заглушками.
+#
+# Postgres запиннен на мажорную версию 16 (не `latest`), чтобы обновление
+# образа не могло молча притащить breaking change между мажорными
+# версиями. `-alpine` — минимальный официальный вариант образа.
+#
+# Переменные окружения читаются из .env в корне репозитория (стандартная
+# интерполяция docker compose, .env туда файл не публикуется — см.
+# .gitignore). database-engineer НЕ создаёт .env/.env.example — это зона
+# devops-engineer; ниже перечислены переменные, которые ожидает этот
+# сервис, чтобы их можно было туда добавить:
+#   POSTGRES_USER      — пользователь БД (по умолчанию agentic_game)
+#   POSTGRES_PASSWORD  — пароль БД (обязателен, дефолта нет намеренно)
+#   POSTGRES_DB        — имя БД (по умолчанию agentic_game)
+#   POSTGRES_PORT      — порт на хосте, пробрасываемый на 5432 в контейнере
+#                         (по умолчанию 5432)
+#
+# --------------------------------------------------------------------------
+# ВАЖНО про расположение .env (добавлено devops-engineer, проверено
+# эмпирически на Docker Compose v5.1.0): при `docker compose -f
+# infra/docker-compose.yml ...` Compose по умолчанию ищет .env НЕ в cwd и
+# не в корне репозитория, а в ДИРЕКТОРИИ ПЕРВОГО -f-файла, то есть в
+# infra/. Комментарий выше про ".env в корне репозитория (стандартная
+# интерполяция)" сам по себе НЕ сработал бы: корневые скрипты в
+# package.json (db:up, docker:up, docker:down) вызывают compose именно
+# как `-f infra/docker-compose.yml` без --env-file/--project-directory, а
+# их я не могу отредактировать (не моя зона владения).
+#
+# Исправление в пределах моей зоны (infra/**): infra/.env — СИМЛИНК на
+# ../.env (см. `ln -s ../.env infra/.env` в команде запуска ниже и в
+# отчёте). Настоящий .env остаётся единственным источником правды в
+# корне репозитория, как и просили; симлинк — просто технический мостик,
+# не секрет и не дублирует значения. Он же .gitignore'ится тем же
+# правилом ".env", что и обычные .env-файлы (см. корневой .gitignore) —
+# создаётся локально, а не коммитится, так же как и сам .env.
+# --------------------------------------------------------------------------
+
+services:
+  # --------------------------------------------------------------------
+  # api и game добавлены devops-engineer (см. CLAUDE.md, зона владения).
+  # Сервис db ниже принадлежит database-engineer и не менялся.
+  # --------------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-agentic_game}
+      # Дефолта у пароля намеренно нет: если POSTGRES_PASSWORD не задан в
+      # .env, `docker compose up` упадёт с понятной ошибкой вместо того,
+      # чтобы молча поднять базу с предсказуемым паролем.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required, set it in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-agentic_game}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - agentic_game_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U ${POSTGRES_USER:-agentic_game} -d ${POSTGRES_DB:-agentic_game}
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # --------------------------------------------------------------------
+  # api — @agentic-game/api (Fastify). Владение: devops-engineer
+  # (Dockerfile, env-проводка), контракт/код — backend-architect /
+  # database-engineer (apps/api/src, apps/api/src/db).
+  #
+  # Собирается из infra/Dockerfile.api с контекстом "..' (корень
+  # репозитория) — без этого pnpm не разрешит workspace-зависимости.
+  # --------------------------------------------------------------------
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.api
+    image: agentic-game-api:local
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 4000
+      HOST: 0.0.0.0
+      # Origin, с которого браузеру разрешено ходить в API (CORS
+      # allowlist, см. apps/api/src/config/env.ts::readGameOrigins).
+      # Это ПУБЛИЧНЫЙ, видимый в браузере адрес сервиса game
+      # (http://localhost:<GAME_PORT>), а НЕ его внутреннее docker-сетевое
+      # имя — браузер обращается к api по адресу с хоста, а не изнутри
+      # docker-сети.
+      GAME_ORIGIN: ${GAME_ORIGIN:-http://localhost:3000}
+      # DATABASE_URL СОЗНАТЕЛЬНО собран из тех же POSTGRES_*-переменных,
+      # что уже требует сервис db (см. его блок выше), а не продублирован
+      # отдельной переменной в .env — так пароль не может рассинхронизи-
+      # роваться между db и api. Внутри docker-сети сервисы обращаются
+      # друг к другу по ИМЕНИ СЕРВИСА (db) и ВНУТРЕННЕМУ порту контейнера,
+      # который ВСЕГДА 5432 — POSTGRES_PORT влияет только на проброс порта
+      # наружу, на хост, и на связность между api и db не влияет.
+      DATABASE_URL: postgres://${POSTGRES_USER:-agentic_game}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required, set it in .env}@db:5432/${POSTGRES_DB:-agentic_game}
+      DB_POOL_MAX: ${DB_POOL_MAX:-10}
+      DB_IDLE_TIMEOUT_MS: ${DB_IDLE_TIMEOUT_MS:-30000}
+      DB_CONNECTION_TIMEOUT_MS: ${DB_CONNECTION_TIMEOUT_MS:-5000}
+      DB_STATEMENT_TIMEOUT_MS: ${DB_STATEMENT_TIMEOUT_MS:-5000}
+      DB_IDLE_IN_TRANSACTION_TIMEOUT_MS: ${DB_IDLE_IN_TRANSACTION_TIMEOUT_MS:-5000}
+    ports:
+      - '${API_PORT:-4000}:4000'
+    healthcheck:
+      # GET /health реально бьёт в БД и отвечает 503 при её недоступности
+      # (см. apps/api/src/routes/health.route.ts) — wget --spider считает
+      # любой не-2xx/3xx ответ провалом, это то поведение, которое нужно.
+      test:
+        - CMD
+        - wget
+        - --no-verbose
+        - --tries=1
+        - --spider
+        - http://127.0.0.1:4000/health
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+
+  # --------------------------------------------------------------------
+  # game — @agentic-game/game (Next.js, output: standalone). Владение:
+  # devops-engineer (Dockerfile, env-проводка), код — nextjs-frontend-
+  # engineer (apps/game/src, next.config.ts).
+  # --------------------------------------------------------------------
+  game:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.game
+      args:
+        # ПУБЛИЧНАЯ переменная Next.js — вшивается в клиентский бандл на
+        # этапе сборки (build ARG), рантаймом контейнера НЕ переопределяется.
+        # См. подробный комментарий в infra/Dockerfile.game.
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:4000}
+    image: agentic-game-game:local
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
+    ports:
+      - '${GAME_PORT:-3000}:3000'
+    healthcheck:
+      # У game нет выделенного /api/health (apps/game/src — не наша
+      # зона) — проверяем, что корневая страница отдаёт 200.
+      test:
+        - CMD
+        - wget
+        - --no-verbose
+        - --tries=1
+        - --spider
+        - http://127.0.0.1:3000/
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  # Именованный volume — данные переживают `docker compose down` и
+  # пересоздание контейнера. Стираются только явным
+  # `docker compose down -v` (см. корневой скрипт `docker:down` в
+  # package.json, который делает это намеренно для полного сброса
+  # окружения).
+  agentic_game_db_data:
+    name: agentic_game_db_data

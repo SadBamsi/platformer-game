@@ -1,0 +1,22 @@
+# .husky/pre-commit — локальный аналог CI-гейта (см. CLAUDE.md, раздел
+# "Notes": "используй pre-commit хук через Husky... симулируя реальный
+# CI-гейт").
+#
+# Husky v9+: никакого "#!/usr/bin/env sh" и ". husky.sh" boilerplate не
+# нужно — .husky/_/pre-commit (сгенерирован husky, не наша зона) сам
+# находит и запускает этот файл через .husky/_/h.
+#
+# 1) lint-staged — прогоняет то, что уже настроено в корневом
+#    package.json (`"lint-staged"`): сейчас это typecheck (`pnpm -r
+#    typecheck`) для staged *.{ts,tsx}. Корневой package.json — не моя
+#    зона владения, я его не редактирую.
+npx lint-staged
+
+# 2) lint — в текущей lint-staged-конфигурации `pnpm -r lint` НЕ вызывается
+#    вообще (для *.{json,md,yml,yaml} там пустой массив, а для *.{ts,tsx} —
+#    только typecheck). Задача явно требует, чтобы pre-commit прогонял И
+#    typecheck, И lint — добавляю lint отдельным шагом здесь, а не трогая
+#    lint-staged config в package.json (вне моей зоны). Раз это не
+#    scoped-по-staged-файлам, а полный `pnpm -r lint` — это самый простой
+#    способ гарантировать покрытие без правок чужого файла.
+pnpm -r lint

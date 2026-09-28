@@ -1,0 +1,263 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 48" width="256" height="48" shape-rendering="crispEdges">
+  <!-- FRAME 0: IDLE (x: 0..32, center ~16) -->
+  <g transform="translate(0, 0)">
+    <!-- Back Braid -->
+    <path d="M10,23 h3 v3 h-3 z M9,26 h3 v3 h-3 z M8,29 h3 v3 h-3 z" fill="#8B5A2B"/>
+    <path d="M8,32 h2 v2 h-2 z" fill="#2B5B84"/>
+    <!-- Hair Base -->
+    <path d="M13,9 h10 v12 h-10 z M14,7 h8 v2 h-8 z" fill="#A06832"/>
+    <path d="M13,9 h10 v3 h-10 z" fill="#B87D43"/>
+    <path d="M13,9 h2 v5 h-2 z M21,9 h2 v5 h-2 z" fill="#8B5A2B"/>
+    <!-- Face -->
+    <path d="M15,13 h9 v8 h-9 z M17,21 h4 v2 h-4 z" fill="#FFCC99"/>
+    <path d="M15,18 h2 v1 h-2 z M22,18 h2 v1 h-2 z" fill="#FF9999"/>
+    <path d="M17,15 h2 v3 h-2 z M22,15 h2 v3 h-2 z" fill="#222222"/>
+    <path d="M17,15 h1 v1 h-1 z M22,15 h1 v1 h-1 z" fill="#FFFFFF"/>
+    <path d="M19,19 h2 v1 h-2 z" fill="#CC5555"/>
+    <!-- Sleeves & Embroidery -->
+    <path d="M11,23 h4 v7 h-4 z M23,23 h4 v7 h-4 z" fill="#FFFFFF"/>
+    <path d="M12,25 h2 v1 h-2 z M12,27 h2 v1 h-2 z M24,25 h2 v1 h-2 z M24,27 h2 v1 h-2 z" fill="#D32F2F"/>
+    <!-- Dress -->
+    <path d="M15,23 h8 v6 h-8 z" fill="#1E88E5"/>
+    <path d="M13,29 h12 v10 h-12 z" fill="#1565C0"/>
+    <path d="M13,38 h12 v1 h-12 z" fill="#0D47A1"/>
+    <path d="M15,29 h1 v9 h-1 z M19,29 h1 v9 h-1 z M23,29 h1 v9 h-1 z" fill="#1976D2"/>
+    <!-- Hands -->
+    <path d="M11,30 h3 v2 h-3 z M24,30 h3 v2 h-3 z" fill="#FFCC99"/>
+    <!-- Legs -->
+    <path d="M15,39 h3 v3 h-3 z M20,39 h3 v3 h-3 z" fill="#FFCC99"/>
+    <!-- Boots -->
+    <path d="M14,42 h4 v6 h-4 z M20,42 h4 v6 h-4 z" fill="#5D4037"/>
+    <path d="M13,46 h5 v2 h-5 z M20,46 h5 v2 h-5 z" fill="#3E2723"/>
+    <path d="M15,43 h2 v1 h-2 z M15,45 h2 v1 h-2 z M21,43 h2 v1 h-2 z M21,45 h2 v1 h-2 z" fill="#8D6E63"/>
+  </g>
+
+  <!-- FRAME 1: IDLE BREATHING (Slightly lowered shoulders/chest pulse, x: 32..64) -->
+  <g transform="translate(32, 0)">
+    <!-- Back Braid -->
+    <path d="M10,24 h3 v3 h-3 z M9,27 h3 v3 h-3 z M8,30 h3 v3 h-3 z" fill="#8B5A2B"/>
+    <path d="M8,33 h2 v2 h-2 z" fill="#2B5B84"/>
+    <!-- Hair Base -->
+    <path d="M13,10 h10 v12 h-10 z M14,8 h8 v2 h-8 z" fill="#A06832"/>
+    <path d="M13,10 h10 v3 h-10 z" fill="#B87D43"/>
+    <path d="M13,10 h2 v5 h-2 z M21,10 h2 v5 h-2 z" fill="#8B5A2B"/>
+    <!-- Face -->
+    <path d="M15,14 h9 v8 h-9 z M17,22 h4 v2 h-4 z" fill="#FFCC99"/>
+    <path d="M15,19 h2 v1 h-2 z M22,19 h2 v1 h-2 z" fill="#FF9999"/>
+    <path d="M17,16 h2 v3 h-2 z M22,16 h2 v3 h-2 z" fill="#222222"/>
+    <path d="M17,16 h1 v1 h-1 z M22,16 h1 v1 h-1 z" fill="#FFFFFF"/>
+    <path d="M19,20 h2 v1 h-2 z" fill="#CC5555"/>
+    <!-- Sleeves & Embroidery -->
+    <path d="M11,24 h4 v7 h-4 z M23,24 h4 v7 h-4 z" fill="#FFFFFF"/>
+    <path d="M12,26 h2 v1 h-2 z M12,28 h2 v1 h-2 z M24,26 h2 v1 h-2 z M24,28 h2 v1 h-2 z" fill="#D32F2F"/>
+    <!-- Dress (slightly expanded chest) -->
+    <path d="M14,24 h10 v6 h-10 z" fill="#1E88E5"/>
+    <path d="M13,30 h12 v9 h-12 z" fill="#1565C0"/>
+    <path d="M13,38 h12 v1 h-12 z" fill="#0D47A1"/>
+    <path d="M15,30 h1 v8 h-1 z M19,30 h1 v8 h-1 z M23,30 h1 v8 h-1 z" fill="#1976D2"/>
+    <!-- Hands -->
+    <path d="M11,31 h3 v2 h-3 z M24,31 h3 v2 h-3 z" fill="#FFCC99"/>
+    <!-- Legs -->
+    <path d="M15,39 h3 v3 h-3 z M20,39 h3 v3 h-3 z" fill="#FFCC99"/>
+    <!-- Boots -->
+    <path d="M14,42 h4 v6 h-4 z M20,42 h4 v6 h-4 z" fill="#5D4037"/>
+    <path d="M13,46 h5 v2 h-5 z M20,46 h5 v2 h-5 z" fill="#3E2723"/>
+    <path d="M15,43 h2 v1 h-2 z M15,45 h2 v1 h-2 z M21,43 h2 v1 h-2 z M21,45 h2 v1 h-2 z" fill="#8D6E63"/>
+  </g>
+
+  <!-- FRAME 2: RUN 1 (Contact - Right leg forward, Left leg back, x: 64..96) -->
+  <g transform="translate(64, 0)">
+    <!-- Back Braid (Slightly floating) -->
+    <path d="M8,22 h3 v3 h-3 z M6,24 h3 v3 h-3 z M4,26 h3 v3 h-3 z" fill="#8B5A2B"/>
+    <path d="M3,28 h2 v2 h-2 z" fill="#2B5B84"/>
+    <!-- Hair Base -->
+    <path d="M12,9 h10 v12 h-10 z M13,7 h8 v2 h-8 z" fill="#A06832"/>
+    <path d="M12,9 h10 v3 h-10 z" fill="#B87D43"/>
+    <path d="M12,9 h2 v5 h-2 z M20,9 h2 v5 h-2 z" fill="#8B5A2B"/>
+    <!-- Face -->
+    <path d="M14,13 h9 v8 h-9 z M16,21 h4 v2 h-4 z" fill="#FFCC99"/>
+    <path d="M14,18 h2 v1 h-2 z M21,18 h2 v1 h-2 z" fill="#FF9999"/>
+    <path d="M16,15 h2 v3 h-2 z M21,15 h2 v3 h-2 z" fill="#222222"/>
+    <path d="M16,15 h1 v1 h-1 z M21,15 h1 v1 h-1 z" fill="#FFFFFF"/>
+    <path d="M18,19 h2 v1 h-2 z" fill="#CC5555"/>
+    <!-- Arms: Left arm forward, Right arm back -->
+    <path d="M19,23 h5 v5 h-5 z" fill="#FFFFFF"/>
+    <path d="M21,25 h2 v1 h-2 z" fill="#D32F2F"/>
+    <path d="M23,27 h3 v2 h-3 z" fill="#FFCC99"/>
+    <path d="M9,23 h4 v6 h-4 z" fill="#FFFFFF"/>
+    <path d="M10,25 h2 v1 h-2 z" fill="#D32F2F"/>
+    <path d="M8,28 h3 v2 h-3 z" fill="#FFCC99"/>
+    <!-- Dress (Angled) -->
+    <path d="M14,23 h8 v6 h-8 z" fill="#1E88E5"/>
+    <path d="M11,29 h13 v9 h-13 z" fill="#1565C0"/>
+    <path d="M11,37 h13 v1 h-13 z" fill="#0D47A1"/>
+    <!-- Legs: Strided -->
+    <path d="M11,38 h3 v3 h-3 z M20,38 h3 v3 h-3 z" fill="#FFCC99"/>
+    <!-- Boots -->
+    <path d="M9,41 h4 v7 h-4 z" fill="#5D4037"/>
+    <path d="M8,46 h5 v2 h-5 z" fill="#3E2723"/>
+    <path d="M21,41 h4 v7 h-4 z" fill="#5D4037"/>
+    <path d="M21,46 h5 v2 h-5 z" fill="#3E2723"/>
+  </g>
+
+  <!-- FRAME 3: RUN 2 (Passing - Body high, legs crossing, x: 96..128) -->
+  <g transform="translate(96, -1)">
+    <!-- Back Braid -->
+    <path d="M9,22 h3 v3 h-3 z M8,25 h3 v3 h-3 z M7,28 h3 v3 h-3 z" fill="#8B5A2B"/>
+    <path d="M6,31 h2 v2 h-2 z" fill="#2B5B84"/>
+    <!-- Hair Base -->
+    <path d="M13,8 h10 v12 h-10 z M14,6 h8 v2 h-8 z" fill="#A06832"/>
+    <path d="M13,8 h10 v3 h-10 z" fill="#B87D43"/>
+    <path d="M13,8 h2 v5 h-2 z M21,8 h2 v5 h-2 z" fill="#8B5A2B"/>
+    <!-- Face -->
+    <path d="M15,12 h9 v8 h-9 z M17,20 h4 v2 h-4 z" fill="#FFCC99"/>
+    <path d="M15,17 h2 v1 h-2 z M22,17 h2 v1 h-2 z" fill="#FF9999"/>
+    <path d="M17,14 h2 v3 h-2 z M22,14 h2 v3 h-2 z" fill="#222222"/>
+    <path d="M17,14 h1 v1 h-1 z M22,14 h1 v1 h-1 z" fill="#FFFFFF"/>
+    <path d="M19,18 h2 v1 h-2 z" fill="#CC5555"/>
+    <!-- Arms neutral/transition -->
+    <path d="M11,22 h4 v7 h-4 z M23,22 h4 v7 h-4 z" fill="#FFFFFF"/>
+    <path d="M12,24 h2 v1 h-2 z M24,24 h2 v1 h-2 z" fill="#D32F2F"/>
+    <path d="M11,29 h3 v2 h-3 z M24,29 h3 v2 h-3 z" fill="#FFCC99"/>
+    <!-- Dress -->
+    <path d="M15,22 h8 v6 h-8 z" fill="#1E88E5"/>
+    <path d="M13,28 h12 v10 h-12 z" fill="#1565C0"/>
+    <path d="M13,37 h12 v1 h-12 z" fill="#0D47A1"/>
+    <!-- Legs: Center crossed -->
+    <path d="M15,38 h3 v4 h-3 z M18,38 h3 v3 h-3 z" fill="#FFCC99"/>
+    <!-- Boots -->
+    <path d="M14,42 h4 v7 h-4 z" fill="#5D4037"/>
+    <path d="M13,47 h5 v2 h-5 z" fill="#3E2723"/>
+    <path d="M18,41 h4 v6 h-4 z" fill="#5D4037"/>
+    <path d="M18,45 h5 v2 h-5 z" fill="#3E2723"/>
+  </g>
+
+  <!-- FRAME 4: RUN 3 (Opposite Contact - Left leg forward, Right leg back, x: 128..160) -->
+  <g transform="translate(128, 0)">
+    <!-- Back Braid -->
+    <path d="M8,22 h3 v3 h-3 z M6,24 h3 v3 h-3 z M4,26 h3 v3 h-3 z" fill="#8B5A2B"/>
+    <path d="M3,28 h2 v2 h-2 z" fill="#2B5B84"/>
+    <!-- Hair Base -->
+    <path d="M12,9 h10 v12 h-10 z M13,7 h8 v2 h-8 z" fill="#A06832"/>
+    <path d="M12,9 h10 v3 h-10 z" fill="#B87D43"/>
+    <path d="M12,9 h2 v5 h-2 z M20,9 h2 v5 h-2 z" fill="#8B5A2B"/>
+    <!-- Face -->
+    <path d="M14,13 h9 v8 h-9 z M16,21 h4 v2 h-4 z" fill="#FFCC99"/>
+    <path d="M14,18 h2 v1 h-2 z M21,18 h2 v1 h-2 z" fill="#FF9999"/>
+    <path d="M16,15 h2 v3 h-2 z M21,15 h2 v3 h-2 z" fill="#222222"/>
+    <path d="M16,15 h1 v1 h-1 z M21,15 h1 v1 h-1 z" fill="#FFFFFF"/>
+    <path d="M18,19 h2 v1 h-2 z" fill="#CC5555"/>
+    <!-- Arms reversed -->
+    <path d="M8,23 h5 v5 h-5 z" fill="#FFFFFF"/>
+    <path d="M9,25 h2 v1 h-2 z" fill="#D32F2F"/>
+    <path d="M6,27 h3 v2 h-3 z" fill="#FFCC99"/>
+    <path d="M20,23 h4 v6 h-4 z" fill="#FFFFFF"/>
+    <path d="M21,25 h2 v1 h-2 z" fill="#D32F2F"/>
+    <path d="M22,28 h3 v2 h-3 z" fill="#FFCC99"/>
+    <!-- Dress -->
+    <path d="M14,23 h8 v6 h-8 z" fill="#1E88E5"/>
+    <path d="M11,29 h13 v9 h-13 z" fill="#1565C0"/>
+    <path d="M11,37 h13 v1 h-13 z" fill="#0D47A1"/>
+    <!-- Legs opposite stride -->
+    <path d="M12,38 h3 v3 h-3 z M19,38 h3 v3 h-3 z" fill="#FFCC99"/>
+    <!-- Boots -->
+    <path d="M20,41 h4 v7 h-4 z" fill="#5D4037"/>
+    <path d="M20,46 h5 v2 h-5 z" fill="#3E2723"/>
+    <path d="M9,41 h4 v7 h-4 z" fill="#5D4037"/>
+    <path d="M8,46 h5 v2 h-5 z" fill="#3E2723"/>
+  </g>
+
+  <!-- FRAME 5: RUN 4 (Push-off / Propulsion, x: 160..192) -->
+  <g transform="translate(160, -1)">
+    <!-- Back Braid -->
+    <path d="M7,22 h3 v3 h-3 z M5,24 h3 v3 h-3 z M3,26 h3 v3 h-3 z" fill="#8B5A2B"/>
+    <path d="M2,28 h2 v2 h-2 z" fill="#2B5B84"/>
+    <!-- Hair Base -->
+    <path d="M12,8 h10 v12 h-10 z M13,6 h8 v2 h-8 z" fill="#A06832"/>
+    <path d="M12,8 h10 v3 h-10 z" fill="#B87D43"/>
+    <path d="M12,8 h2 v5 h-2 z M20,8 h2 v5 h-2 z" fill="#8B5A2B"/>
+    <!-- Face -->
+    <path d="M14,12 h9 v8 h-9 z M16,20 h4 v2 h-4 z" fill="#FFCC99"/>
+    <path d="M14,17 h2 v1 h-2 z M21,17 h2 v1 h-2 z" fill="#FF9999"/>
+    <path d="M16,14 h2 v3 h-2 z M21,14 h2 v3 h-2 z" fill="#222222"/>
+    <path d="M16,14 h1 v1 h-1 z M21,14 h1 v1 h-1 z" fill="#FFFFFF"/>
+    <path d="M18,18 h2 v1 h-2 z" fill="#CC5555"/>
+    <!-- Arms -->
+    <path d="M10,22 h4 v6 h-4 z M22,22 h4 v6 h-4 z" fill="#FFFFFF"/>
+    <path d="M11,24 h2 v1 h-2 z M23,24 h2 v1 h-2 z" fill="#D32F2F"/>
+    <path d="M10,28 h3 v2 h-3 z M23,28 h3 v2 h-3 z" fill="#FFCC99"/>
+    <!-- Dress -->
+    <path d="M14,22 h8 v6 h-8 z" fill="#1E88E5"/>
+    <path d="M12,28 h12 v9 h-12 z" fill="#1565C0"/>
+    <path d="M12,36 h12 v1 h-12 z" fill="#0D47A1"/>
+    <!-- Legs pushing back -->
+    <path d="M13,37 h3 v4 h-3 z M18,37 h3 v3 h-3 z" fill="#FFCC99"/>
+    <!-- Boots -->
+    <path d="M12,41 h4 v6 h-4 z" fill="#5D4037"/>
+    <path d="M11,45 h5 v2 h-5 z" fill="#3E2723"/>
+    <path d="M19,40 h4 v7 h-4 z" fill="#5D4037"/>
+    <path d="M19,46 h5 v2 h-5 z" fill="#3E2723"/>
+  </g>
+
+  <!-- FRAME 6: JUMP (Upward pose, floating braid/skirt, feet alignment at bottom, x: 192..224) -->
+  <g transform="translate(192, -4)">
+    <!-- Back Braid (Flying up) -->
+    <path d="M6,20 h3 v3 h-3 z M4,21 h3 v3 h-3 z M2,22 h3 v3 h-3 z" fill="#8B5A2B"/>
+    <path d="M1,24 h2 v2 h-2 z" fill="#2B5B84"/>
+    <!-- Hair Base -->
+    <path d="M12,7 h10 v12 h-10 z M13,5 h8 v2 h-8 z" fill="#A06832"/>
+    <path d="M12,7 h10 v3 h-10 z" fill="#B87D43"/>
+    <path d="M12,7 h2 v5 h-2 z M20,7 h2 v5 h-2 z" fill="#8B5A2B"/>
+    <!-- Face -->
+    <path d="M14,11 h9 v8 h-9 z M16,19 h4 v2 h-4 z" fill="#FFCC99"/>
+    <path d="M14,16 h2 v1 h-2 z M21,16 h2 v1 h-2 z" fill="#FF9999"/>
+    <path d="M16,13 h2 v3 h-2 z M21,13 h2 v3 h-2 z" fill="#222222"/>
+    <path d="M16,13 h1 v1 h-1 z M21,13 h1 v1 h-1 z" fill="#FFFFFF"/>
+    <path d="M18,17 h2 v1 h-2 z" fill="#CC5555"/>
+    <!-- Arms raised upward -->
+    <path d="M8,17 h5 v6 h-5 z M20,17 h5 v6 h-5 z" fill="#FFFFFF"/>
+    <path d="M9,19 h2 v1 h-2 z M21,19 h2 v1 h-2 z" fill="#D32F2F"/>
+    <path d="M9,15 h3 v2 h-3 z M21,15 h3 v2 h-3 z" fill="#FFCC99"/>
+    <!-- Dress flared out -->
+    <path d="M14,21 h8 v6 h-8 z" fill="#1E88E5"/>
+    <path d="M10,27 h16 v8 h-16 z" fill="#1565C0"/>
+    <path d="M10,34 h16 v1 h-16 z" fill="#0D47A1"/>
+    <!-- Legs tucked slightly -->
+    <path d="M13,35 h3 v5 h-3 z M18,35 h3 v5 h-3 z" fill="#FFCC99"/>
+    <!-- Boots -->
+    <path d="M12,40 h4 v7 h-4 z M18,40 h4 v7 h-4 z" fill="#5D4037"/>
+    <path d="M11,45 h5 v2 h-5 z M18,45 h5 v2 h-5 z" fill="#3E2723"/>
+    <path d="M13,41 h2 v1 h-2 z M13,43 h2 v1 h-2 z M19,41 h2 v1 h-2 z M19,43 h2 v1 h-2 z" fill="#8D6E63"/>
+  </g>
+
+  <!-- FRAME 7: FALL (Downward pose, braid up, dress blown up, feet aligned, x: 224..256) -->
+  <g transform="translate(224, -2)">
+    <!-- Back Braid (Flowing upwards high) -->
+    <path d="M6,16 h3 v3 h-3 z M4,14 h3 v3 h-3 z M2,12 h3 v3 h-3 z" fill="#8B5A2B"/>
+    <path d="M1,11 h2 v2 h-2 z" fill="#2B5B84"/>
+    <!-- Hair Base -->
+    <path d="M12,8 h10 v12 h-10 z M13,6 h8 v2 h-8 z" fill="#A06832"/>
+    <path d="M12,8 h10 v3 h-10 z" fill="#B87D43"/>
+    <path d="M12,8 h2 v5 h-2 z M20,8 h2 v5 h-2 z" fill="#8B5A2B"/>
+    <!-- Face -->
+    <path d="M14,12 h9 v8 h-9 z M16,20 h4 v2 h-4 z" fill="#FFCC99"/>
+    <path d="M14,17 h2 v1 h-2 z M21,17 h2 v1 h-2 z" fill="#FF9999"/>
+    <path d="M16,14 h2 v3 h-2 z M21,14 h2 v3 h-2 z" fill="#222222"/>
+    <path d="M16,14 h1 v1 h-1 z M21,14 h1 v1 h-1 z" fill="#FFFFFF"/>
+    <path d="M18,18 h2 v1 h-2 z" fill="#CC5555"/>
+    <!-- Arms angled outward for balance -->
+    <path d="M7,22 h5 v5 h-5 z M21,22 h5 v5 h-5 z" fill="#FFFFFF"/>
+    <path d="M8,24 h2 v1 h-2 z M22,24 h2 v1 h-2 z" fill="#D32F2F"/>
+    <path d="M5,25 h3 v2 h-3 z M25,25 h3 v2 h-3 z" fill="#FFCC99"/>
+    <!-- Dress billowing wide -->
+    <path d="M14,22 h8 v5 h-8 z" fill="#1E88E5"/>
+    <path d="M9,27 h18 v8 h-18 z" fill="#1565C0"/>
+    <path d="M9,34 h18 v1 h-18 z" fill="#0D47A1"/>
+    <!-- Legs extended downward -->
+    <path d="M13,35 h3 v7 h-3 z M18,35 h3 v7 h-3 z" fill="#FFCC99"/>
+    <!-- Boots reaching bottom boundary y=48 -->
+    <path d="M12,42 h4 v6 h-4 z M18,42 h4 v6 h-4 z" fill="#5D4037"/>
+    <path d="M11,46 h5 v2 h-5 z M18,46 h5 v2 h-5 z" fill="#3E2723"/>
+    <path d="M13,43 h2 v1 h-2 z M13,45 h2 v1 h-2 z M19,43 h2 v1 h-2 z M19,45 h2 v1 h-2 z" fill="#8D6E63"/>
+  </g>
+</svg>

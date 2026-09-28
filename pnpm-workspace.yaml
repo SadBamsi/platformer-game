@@ -1,0 +1,11 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# pnpm 11 убрал onlyBuiltDependencies/ignoredBuiltDependencies и заменил их
+# на allowBuilds: карта «матчер пакета -> можно ли запускать build-скрипты».
+# Пакеты, не указанные здесь, падают с ERR_PNPM_IGNORED_BUILDS.
+allowBuilds:
+  esbuild: true        # нативный бинарник, нужен для tsx и vitest
+  unrs-resolver: true  # нативный резолвер, нужен eslint-plugin-import
+  sharp: true          # оптимизация изображений в next build

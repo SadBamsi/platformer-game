@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(find /:*)",
+      "Bash(find / *)",
+      "Bash(find ~:*)",
+      "Bash(find ~/*)",
+      "Bash(find /Users:*)",
+      "Bash(find /Users/*)",
+      "Bash(mdfind:*)",
+      "Bash(locate:*)",
+      "Read(~/Desktop/**)",
+      "Read(~/Documents/**)",
+      "Read(~/Downloads/**)",
+      "Read(~/Library/Mobile Documents/**)"
+    ]
+  }
+}

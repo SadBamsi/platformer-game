@@ -1,0 +1,75 @@
+# .dockerignore — корень репозитория.
+#
+# ВАЖНО (проверено эмпирически 2026-09-22, docker compose v5.1.0 /
+# Docker 29.2.1): Docker подхватывает .dockerignore ТОЛЬКО из корня
+# build-контекста, а не из директории, где лежит -f/--file Dockerfile.
+# Оба Dockerfile'а (infra/Dockerfile.api, infra/Dockerfile.game) собираются
+# с контекстом "..' (корень репозитория, см. infra/docker-compose.yml), а
+# не "infra/" — поэтому файл ОБЯЗАН лежать здесь, infra/.dockerignore
+# был бы просто проигнорирован. Это единственное исключение из владения
+# devops-engineer вне infra/**, явно разрешённое в задаче.
+
+# --- git / IDE ---
+.git/
+.github/
+.vscode/
+.idea/
+.DS_Store
+
+# --- зависимости (переустанавливаются в образе через pnpm) ---
+node_modules/
+**/node_modules/
+.pnpm-store/
+
+# --- билд-артефакты (пересобираются внутри образа) ---
+dist/
+**/dist/
+build/
+**/build/
+.next/
+**/.next/
+out/
+**/out/
+*.tsbuildinfo
+**/*.tsbuildinfo
+
+# --- секреты и локальные env-файлы: НИКОГДА не должны попасть в слой ---
+.env
+.env.*
+!.env.example
+!**/.env.example
+!.env.local.example
+!**/.env.local.example
+
+# --- тесты / отчёты / кэши инструментов ---
+coverage/
+**/coverage/
+playwright-report/
+**/playwright-report/
+test-results/
+**/test-results/
+.eslintcache
+**/.eslintcache
+
+# --- логи ---
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# --- husky (git-хуки не нужны внутри образа) ---
+.husky/
+
+# --- сам infra/, кроме того, что реально нужно для сборки ---
+# Dockerfile'ы и docker-compose.yml не нужны ВНУТРИ собираемого образа —
+# они описывают, как его собрать/запустить, а не что в нём должно быть.
+infra/Dockerfile.api
+infra/Dockerfile.game
+infra/docker-compose.yml
+infra/.env
+
+# --- документация, не нужная в рантайм-образе ---
+# Проверено: ни один исходник не делает `import`/`require` .md-файла
+# (grep по apps/*/src на "\.md'" — совпадений нет), исключать безопасно.
+CLAUDE.md
+**/CLAUDE.md
+**/*.md

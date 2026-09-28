@@ -1,0 +1,113 @@
+# syntax=docker/dockerfile:1
+#
+# infra/Dockerfile.game — multi-stage образ @agentic-game/game (Next.js 16,
+# output: 'standalone').
+#
+# ВАЖНО: контекст сборки — КОРЕНЬ РЕПОЗИТОРИЯ, не infra/ и не apps/game/:
+#   docker build -f infra/Dockerfile.game .
+# (см. infra/docker-compose.yml: build.context: ..). Без этого pnpm не
+# увидит pnpm-lock.yaml/pnpm-workspace.yaml, а Next не сможет трассировать
+# файлы @agentic-game/types для standalone-вывода.
+#
+# Владение (см. CLAUDE.md): apps/game/src и next.config.ts —
+# nextjs-frontend-engineer. Этот Dockerfile лишь собирает и упаковывает их
+# код, ничего там не меняет и не чинит.
+#
+# ИЗВЕСТНЫЙ БЛОКЕР (не в зоне devops-engineer, см. отчёт): на момент
+# написания `pnpm --filter @agentic-game/game build` падает в Turbopack —
+# packages/types/src/index.ts делает `export * from './errors.js'` и т.д.,
+# а файлы на диске — errors.ts/scores.ts/health.ts (.js там не существует).
+# tsc (moduleResolution NodeNext/Bundler) понимает это сопоставление
+# .js-специфайкера с .ts-файлом, Turbopack — нет, и резолвит буквально.
+# Из-за этого ни этот Dockerfile, ни голый `next build` вне Docker сейчас
+# собраться не могут. Структура образа ниже соответствует официальному
+# паттерну Next.js для монорепо (см. отчёт), но полный `docker build`
+# end-to-end не пройден из-за этого стороннего бага.
+
+ARG NODE_IMAGE=node:24.12.0-alpine@sha256:c921b97d4b74f51744057454b306b418cf693865e73b8100559189605f6955b8
+# Совпадает с infra/Dockerfile.api — см. комментарий там про версию/digest.
+
+# ---------------------------------------------------------------------------
+# base
+# ---------------------------------------------------------------------------
+FROM ${NODE_IMAGE} AS base
+RUN corepack enable && corepack prepare pnpm@11.6.0 --activate
+WORKDIR /app
+
+# ---------------------------------------------------------------------------
+# deps — install всего workspace с --frozen-lockfile. НЕ --prod: Next build
+# нужен typescript/eslint/@types/* из devDependencies.
+# ---------------------------------------------------------------------------
+FROM base AS deps
+COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc package.json ./
+COPY apps/api/package.json apps/api/package.json
+COPY apps/game/package.json apps/game/package.json
+COPY packages/types/package.json packages/types/package.json
+RUN --mount=type=cache,id=pnpm-store-game,target=/root/.local/share/pnpm/store \
+    pnpm install --frozen-lockfile
+
+# ---------------------------------------------------------------------------
+# build
+# ---------------------------------------------------------------------------
+FROM deps AS build
+COPY tsconfig.base.json ./
+COPY packages/types packages/types
+COPY apps/game apps/game
+
+# NEXT_PUBLIC_* — ПУБЛИЧНЫЕ переменные Next.js: встраиваются в клиентский
+# JS-бандл на этапе `next build` и НЕ читаются из рантайм-окружения
+# контейнера. Поэтому это build ARG, а не ENV рантайм-стадии — если
+# понадобится другой API URL, образ нужно ПЕРЕСОБРАТЬ с другим значением
+# ARG, одним и тем же образом для разных окружений (dev/stage/prod)
+# пользоваться нельзя. См. apps/game/.env.local.example и
+# apps/game/src/lib/env.ts (там же дефолт на случай отсутствия значения).
+ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
+ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+
+# next.config.ts не задаёт outputFileTracingRoot явно — Next.js 16
+# автоматически определяет корень монорепо по ближайшему lockfile выше по
+# дереву (pnpm-lock.yaml лежит в корне репозитория) и печатает
+# предупреждение в логе сборки. Работать это должно (см. отчёт: путь
+# server.js в standalone выводе выведен из исходников Next.js через
+# Context7), но предупреждение остаётся — devops-engineer не трогает
+# next.config.ts (зона nextjs-frontend-engineer), только фиксирует это как
+# открытый вопрос в отчёте.
+RUN pnpm --filter @agentic-game/game... build
+
+# ---------------------------------------------------------------------------
+# runtime — минимальный образ на базе standalone-вывода Next.js.
+#
+# Next standalone копирует ТОЛЬКО файлы сервера и оттрассированный
+# node_modules — public/ и .next/static/ туда сознательно не входят
+# (подтверждено через Context7, исходники writeStandaloneDirectory в
+# vercel/next.js) и их нужно копировать отдельно.
+#
+# В монорепо standalone-вывод зеркалит путь ПРИЛОЖЕНИЯ ОТНОСИТЕЛЬНО КОРНЯ
+# ТРАССИРОВКИ: файлы оказываются под apps/game/... внутри .next/standalone,
+# а не в его корне (подтверждено через Context7 по исходнику
+# writeStandaloneDirectory: outputPath = path.join(distDir, 'standalone',
+# path.relative(outputFileTracingRoot, filePath))). Поэтому сервер
+# запускается как `node apps/game/server.js`, а не `node server.js`, и
+# public/static копируются в apps/game/..., а не в корень.
+# ---------------------------------------------------------------------------
+FROM ${NODE_IMAGE} AS runtime
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+WORKDIR /app
+
+RUN mkdir -p apps/game/.next && chown -R node:node apps/game/.next
+
+COPY --from=build --chown=node:node /app/apps/game/.next/standalone ./
+COPY --from=build --chown=node:node /app/apps/game/public ./apps/game/public
+COPY --from=build --chown=node:node /app/apps/game/.next/static ./apps/game/.next/static
+
+USER node
+EXPOSE 3000
+# У apps/game нет выделенного /api/health роута (apps/game/src — не наша
+# зона, не добавляем сами) — проверяем, что корневая страница "/" отдаёт
+# 200. Дублирует healthcheck из docker-compose.yml для случая запуска
+# образа вне compose.
+HEALTHCHECK --interval=10s --timeout=3s --start-period=15s --retries=5 \
+  CMD ["node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+CMD ["node", "apps/game/server.js"]

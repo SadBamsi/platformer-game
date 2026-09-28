@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "game-dev",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@agentic-game/game", "dev"],
+      "port": 3000,
+      "autoPort": true
+    }
+  ]
+}

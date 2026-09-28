@@ -1,0 +1,138 @@
+:root {
+  --color-bg: #12131c;
+  --color-bg-panel: #1d2333;
+  --color-text: #f2f4ff;
+  --color-text-muted: #aab4d4;
+  --color-accent: #4f9dff;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+}
+
+a {
+  color: var(--color-accent);
+}
+
+.menu {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.menu-nav {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.menu-nav a {
+  padding: 10px 20px;
+  border: 1px solid var(--color-accent);
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.play-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  height: 100dvh;
+  min-height: 0;
+  gap: 16px;
+  padding: 24px 0 0;
+  overflow: hidden;
+}
+
+.play-page__topbar {
+  width: 100%;
+  padding: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.hud {
+  display: flex;
+  gap: 16px;
+  padding: 8px 16px;
+  background: var(--color-bg-panel);
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.gamepad-badge {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--color-bg-panel);
+  color: var(--color-text-muted);
+  font-size: 14px;
+}
+
+.gamepad-badge--connected {
+  color: #7be08a;
+}
+
+.gamepad-badge--disconnected {
+  color: #e08a7b;
+}
+
+.game-canvas-root,
+.game-canvas-loading {
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-panel);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.leaderboard-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.leaderboard-page__error {
+  color: #e08a7b;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--color-bg-panel);
+}
+
+.leaderboard-table__empty {
+  color: var(--color-text-muted);
+}

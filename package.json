@@ -1,0 +1,37 @@
+{
+  "name": "agentic-game",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Browser 2D platformer with gamepad control \u2014 full-stack learning monorepo",
+  "engines": {
+    "node": ">=20.9.0",
+    "pnpm": ">=9"
+  },
+  "packageManager": "pnpm@11.6.0",
+  "scripts": {
+    "dev": "pnpm --parallel -r dev",
+    "dev:game": "pnpm --filter @agentic-game/game dev",
+    "dev:api": "pnpm --filter @agentic-game/api dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "db:up": "docker compose --env-file .env -f infra/docker-compose.yml up -d db",
+    "db:down": "docker compose --env-file .env -f infra/docker-compose.yml down",
+    "db:migrate": "pnpm --filter @agentic-game/api migrate",
+    "docker:up": "docker compose --env-file .env -f infra/docker-compose.yml up --build",
+    "docker:down": "docker compose --env-file .env -f infra/docker-compose.yml down -v",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
+    "typescript": "~5.9.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "bash -c 'pnpm -r typecheck'"
+    ],
+    "*.{json,md,yml,yaml}": []
+  }
+}
