@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import type { InputManager } from "@/game/input";
 import type { GameEventBus } from "../bridge/GameEventBus";
 import { ParallaxBackground } from "../entities/ParallaxBackground";
+import { Enemies } from "../entities/Enemies";
 import { Platform } from "../entities/Platform";
 import { Player } from "../entities/Player";
 import { GRID_COLUMNS, GRID_ROWS, WORLD_GRAVITY_COEFFICIENT } from "../dimensions";
@@ -13,6 +14,7 @@ import {
 import { generateStage, type PlatformSpec, type Stage } from "@/game/rising/stageGenerator";
 import { Water } from "@/game/rising/Water";
 import { HOUSE_SIZE_BLOCKS, housePlacement } from "@/game/rising/goal";
+import { placeDecorations, TREE_KINDS, TREE_SIZE_BLOCKS, type Decoration } from "@/game/rising/decorations";
 import { layoutPixelText } from "@/game/ui/pixelFont";
 import { STAGE_CLEAR_DELAY_MS, STAGE_CLEAR_TITLE, stageClearSubtitle } from "@/game/ui/stageClear";
 
@@ -47,7 +49,11 @@ export class PlatformerScene extends Phaser.Scene {
   private platformSpecs: PlatformSpec[] = [];
   /** Зона касания дома-цели (стены дома), только overlap, без коллизии. */
   private exitZone!: Phaser.GameObjects.Zone;
+  /** Лесуны: толкают игрока, жизнь не отнимают (entities/Enemies.ts). */
+  private enemies!: Enemies;
   private house!: Phaser.GameObjects.Image;
+  /** Деревья-декорации: только картинки, без физики (rising/decorations.ts). */
+  private decorations: Array<{ spec: Decoration; image: Phaser.GameObjects.Image }> = [];
   /** Этап пройден: игрок заморожен, висит надпись, ждём автостарта следующего. */
   private stageCleared = false;
   private stageClearBanner: Phaser.GameObjects.Graphics | null = null;
@@ -133,6 +139,16 @@ export class PlatformerScene extends Phaser.Scene {
       );
     });
 
+    // Деревья создаются после платформ и до дома и игрока: рисуются поверх
+    // травы, но позади дома и девочки. В физику не добавляются.
+    for (const kind of TREE_KINDS) {
+      this.textures.get(`tree-${kind}`).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+    this.decorations = placeDecorations(this.stage).map((spec) => ({
+      spec,
+      image: this.add.image(0, 0, `tree-${spec.kind}`).setOrigin(0.5, 1),
+    }));
+
     this.createPlayerAnimations();
 
     // Дом-цель на платформе выхода (rising/goal.ts). Победа — только при
@@ -152,6 +168,9 @@ export class PlatformerScene extends Phaser.Scene {
     this.exitZone = this.add.zone(0, 0, 10, 10);
     this.physics.add.existing(this.exitZone, true);
 
+    // Враги — до resizeLevel(): он расставляет их по размеру блока.
+    this.enemies = new Enemies(this, this.stage, (row, blockHeight) => this.rowToPixelY(row, blockHeight));
+
     this.resizeLevel();
 
     this.scale.on("resize", this.handleResize, this);
@@ -169,6 +188,7 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.player = new Player(this, 0, 0);
     this.physics.add.collider(this.player, this.platformGroup);
+    this.physics.add.collider(this.player, this.enemies.group);
     this.physics.add.overlap(this.player, this.exitZone, () => this.handleExitReached());
 
     this.resizePlayer(true);
@@ -344,6 +364,12 @@ export class PlatformerScene extends Phaser.Scene {
       this.levelPlatforms[index]!.resize(spec.x, phaserRow, blockWidth, blockHeight);
     });
 
+    for (const { spec, image } of this.decorations) {
+      image
+        .setPosition(spec.centerX * blockWidth, this.rowToPixelY(spec.baseRow, blockHeight))
+        .setDisplaySize(TREE_SIZE_BLOCKS * blockWidth, TREE_SIZE_BLOCKS * blockHeight);
+    }
+
     // Дом стоит на платформе выхода, зона касания — его стены
     // (rising/goal.ts, housePlacement).
     const placement = housePlacement(this.stage.exit);
@@ -363,6 +389,8 @@ export class PlatformerScene extends Phaser.Scene {
     const exitBody = this.exitZone.body as Phaser.Physics.Arcade.StaticBody;
     exitBody.setSize(triggerWidth, triggerHeight);
     exitBody.updateFromGameObject();
+
+    this.enemies.layout(blockWidth, blockHeight);
   }
 
   /**
@@ -522,6 +550,7 @@ export class PlatformerScene extends Phaser.Scene {
   private freezeForStageClear(): void {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     body.setVelocity(0, 0);
+    this.enemies.stop();
     this.physics.world.pause();
   }
 

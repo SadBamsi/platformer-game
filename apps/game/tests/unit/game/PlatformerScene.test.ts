@@ -26,6 +26,17 @@ vi.mock('@/game/entities/ParallaxBackground', () => ({
   },
 }));
 
+// Враги — отдельная сущность на Arcade Physics (entities/Enemies.ts),
+// покрыта rising/enemies.test.ts и enemiesArcade.test.ts (там же — движение
+// по шагам физики); здесь — только то, что сцена их создаёт и расставляет.
+vi.mock('@/game/entities/Enemies', () => ({
+  Enemies: class {
+    group = { isFakeEnemyGroup: true };
+    layout = vi.fn();
+    stop = vi.fn();
+  },
+}));
+
 vi.mock('@/game/entities/Player', () => {
   class FakePlayer {
     x = 0;
@@ -47,6 +58,7 @@ import { PlatformerScene } from '@/game/scenes/PlatformerScene';
 import { STAGE_CLEAR_DELAY_MS, STAGE_CLEAR_TITLE, stageClearSubtitle } from '@/game/ui/stageClear';
 import { WATER_START_DELAY_SECONDS, waterSpeedRowsPerSec } from '@/game/rising/difficulty';
 import { generateStage } from '@/game/rising/stageGenerator';
+import { placeDecorations } from '@/game/rising/decorations';
 
 /**
  * Приватные (TS-only, доступны в рантайме) методы PlatformerScene, вызываемые
@@ -585,6 +597,7 @@ function makeUpdateFakeThis(overrides: {
       surfaceRow: overrides.waterSurfaceRow ?? 0,
     },
     elapsedSeconds: 0,
+    enemies: { stop: vi.fn() },
     player,
     eventBus,
     scene,
@@ -748,5 +761,46 @@ describe('PlatformerScene — подписка на resize снимается п
     expect((fakeScene as { stage?: ReturnType<typeof generateStage> }).stage?.heightRows).toBe(
       generateStage(2).heightRows,
     );
+  });
+});
+
+describe('PlatformerScene — деревья-декорации (rising/decorations.ts)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('create() рисует деревья этапа картинками без физики и ставит их на платформы', () => {
+    const { fakeScene } = makeFakeScene();
+    (fakeScene as { stageNumber?: number }).stageNumber = 1;
+    (fakeScene as { lives?: number }).lives = 3;
+    (fakeScene as { score?: number }).score = 0;
+
+    proto.create.call(fakeScene);
+
+    const expected = placeDecorations(generateStage(1));
+    expect(expected.length).toBeGreaterThan(0);
+    const add = fakeScene['add'] as { image: ReturnType<typeof vi.fn> };
+    const treeCalls = add.image.mock.calls.filter(([, , key]) => String(key).startsWith('tree-'));
+    expect(treeCalls.map(([, , key]) => key)).toEqual(expected.map((d) => `tree-${d.kind}`));
+
+    const trees = (fakeScene as { decorations?: Array<{ image: unknown }> }).decorations ?? [];
+    const physicsAdd = (fakeScene['physics'] as { add: { existing: ReturnType<typeof vi.fn> } }).add;
+    for (const { image } of trees) {
+      expect(physicsAdd.existing).not.toHaveBeenCalledWith(image, expect.anything());
+      expect(physicsAdd.existing).not.toHaveBeenCalledWith(image);
+    }
+
+    // Низ картинки (origin 0.5/1) — на верхе платформы, ось — по centerX.
+    const blockWidth = proto.blockWidth.call(fakeScene);
+    const blockHeight = proto.blockHeight.call(fakeScene);
+    trees.forEach(({ image }, i) => {
+      const img = image as { setOrigin: ReturnType<typeof vi.fn>; setPosition: ReturnType<typeof vi.fn> };
+      expect(img.setOrigin).toHaveBeenCalledWith(0.5, 1);
+      const spec = expected[i]!;
+      expect(img.setPosition).toHaveBeenLastCalledWith(
+        spec.centerX * blockWidth,
+        proto.rowToPixelY.call(fakeScene, spec.baseRow, blockHeight),
+      );
+    });
   });
 });
